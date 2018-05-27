@@ -1,0 +1,5 @@
+burstcoincg (1.3.6cg-1) stable; urgency=low
+
+  * Multiple Database Backends and Quicksync
+
+ -- ac0v <ac0v@sys-network.de>  Sun, 29 Oct 2017 00:00:00 +0000

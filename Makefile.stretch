@@ -1,0 +1,34 @@
+.DEFAULT_GOAL := build
+
+PACKAGE    := burstcoincg
+VERSION	   := 1.3.6cg
+RELEASE    := 1
+
+SHELL      := /bin/bash
+ROOT_DIR   := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+TARGET	   := package.cryptoguru.org
+REMOTE_DIR := /tmp/built/$(PACKAGE)
+
+DIST       := stretch
+OS	   := debian
+
+.PHONY: build
+
+build:
+	rm -rf build/*$(VERSION)* $(ROOT_DIR)/usr/share/burstcoincg/*
+	cp -r $(ROOT_DIR)/../dist/tmp/* $(ROOT_DIR)/usr/share/burstcoincg/
+	echo "nxt.dbUrl=jdbc:mariadb://_DBC_DBSERVER_:3306/_DBC_DBNAME_" > usr/share/burstcoincg/nxt.properties-sample
+	echo "nxt.dbUsername=_DBC_DBUSER_" >> usr/share/burstcoincg/nxt.properties-sample
+	echo "nxt.dbPassword=_DBC_DBPASS_" >> usr/share/burstcoincg/nxt.properties-sample
+	TARBALL_EXTRA_FILES="etc usr" RELEASE=$(RELEASE) VERSION=$(VERSION) OS=$(OS) DIST=$(DIST) ./packpack/packpack
+cleanup:
+	echo remember to run: gpg-agent --daemon --enable-ssh-support --homedir /root/.gnupg
+	ssh $(TARGET) GPG_TTY=tty reprepro -b /srv/package/$(OS)/$(DIST) remove $(DIST) $(PACKAGE)
+	ssh $(TARGET) GPG_TTY=tty reprepro -b /srv/package/$(OS)/$(DIST) deleteunreferenced
+deploy:
+	echo remember to run: gpg-agent --daemon --enable-ssh-support --homedir /root/.gnupg
+	ssh $(TARGET) rm -rf $(REMOTE_DIR)
+	ssh $(TARGET) mkdir -p $(REMOTE_DIR)
+	scp build/*.deb $(TARGET):$(REMOTE_DIR)
+	ssh $(TARGET) GPG_TTY=tty reprepro -b /srv/package/$(OS)/$(DIST) includedeb $(DIST) $(REMOTE_DIR)/*.deb

@@ -1,0 +1,15 @@
+Source: burstcoincg
+Section: misc
+Priority: extra
+Maintainer: PoC-Consortium
+Homepage: https://github.com/PoC-Consortium/burstcoin
+Build-Depends: dbconfig-common, debhelper (>= 9), dh-systemd
+
+Package: burstcoincg
+Architecture: amd64
+Depends: openjdk-8-jre-headless, mariadb-server, dbconfig-common, adduser
+Section: misc
+Priority: extra
+Multi-Arch: foreign
+Homepage: https://github.com/PoC-Consortium/burstcoin
+Description: Burstcoin wallet powered by PoC-Consortium based on MariaDB.
